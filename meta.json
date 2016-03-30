@@ -2,70 +2,47 @@
  * Metadata describing the module operation
  */
 {
-    "inputs": [
-        {
-            "id": "email",
-            "title": "Email Address"
-        },
-        {
-            "id": "given_name",
-            "title":"First Name"
-        },
-        {
-            "id": "family_name",
-            "title":"Last Name"
-        },
-        {
-            "id": "location",
-            "title":"Location"
-        },
-        {
-            "id": "company",
-            "title":"Company"
-        },
-        {
-            "id": "companu_domain",
-            "title":"Company URL"
-        },
-        {
-            "id": "linkedin",
-            "title":"Linked In"
-        },
-        {
-            "id": "facebook",
-            "title":"Facebook"
-        }
-    ],
-    "outputs": [
-        {
-            "id": "id",
-            "title":"ID"
-        },
-        {
-            "id": "name",
-            "title":"Name"
-        },
-        {
-            "id": "email",
-            "title":"Email"
-        },
-        {
-            "id": "gender",
-            "title":"Gender"
-        },
-        {
-            "id": "bio",
-            "title":"Bio"
-        },
-        {
-            "id": "site",
-            "title":"Site"
-        },
-        {
-            "id": "employment",
-            "title":"Employment"
-        }
-    ],
     "icon": "dex-clearbit",
-    "title": "Clearbit: Get Person"
+    "title": "Clearbit: Get Person",
+    "inputs": [{
+        "id": "email",
+        "title": "Email Address"
+    }, {
+        "id": "given_name",
+        "title":"First Name"
+    }, {
+        "id": "family_name",
+        "title":"Last Name"
+    }, {
+        "id": "location",
+        "title":"Location"
+    }, {
+        "id": "company",
+        "title":"Company"
+    }, {
+        "id": "api_key",
+        "title": "API Key"
+    }],
+    "outputs": [{
+        "id": "id",
+        "title":"ID"
+    }, {
+        "id": "name",
+        "title":"Name"
+    }, {
+        "id": "email",
+        "title":"Email"
+    }, {
+        "id": "gender",
+        "title":"Gender"
+    }, {
+        "id": "bio",
+        "title":"Bio"
+    }, {
+        "id": "site",
+        "title":"Site"
+    }, {
+        "id": "employment",
+        "title":"Employment"
+    }]
 }

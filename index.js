@@ -1,29 +1,45 @@
-var util = require('./util.js');
-var request = require('request').defaults({
-    baseUrl: 'https://person.clearbit.com/'
-});
+var _     = require('lodash')
+  , agent = require('superagent')
+  , q     = require('q')
+;
 
-var pickInputs = {
-        'email': 'email',
-        'given_name': 'given_name',
-        'family_name': 'family_name',
-        'location': 'location',
-        'company': 'company',
-        'company_domain': 'company_domain',
-        'linkedin': 'linkedin',
-        'facebook': 'facebook'
-    },
-    pickOutputs = {
-        'id': 'person.id',
-        'name': 'person.name',
-        'email': 'person.email',
-        'gender': 'person.gender',
-        'location': 'person.location',
-        'bio': 'person.bio',
-        'site': 'person.site',
+/**
+ * Stitches a collection together based on a master key that dictates how many
+ * operations should be performed for this set. 
+ * 
+ * @param  {AppStep} step   - The step to use for inputs
+ * @param  {String}     master - The key to base indexing off of. This key determines how many elements will be in the collection
+ * 
+ * @return {Array} A collection of objects for iteration
+ */
+function stitch(step, master) {
+    var stitched = [];
+    step.input(master).each(function(item, idx) {
+        var el = {};
+        stitched.push(el);
+        _.each(step.inputs(), function(input, key) {
+            el[key] = indexOrFirst(step, key, idx);
+        });
+    });
 
-        'employment': 'person.employment'
-    };
+    return stitched;
+}
+
+/**
+ * Get an input at an index or from the first element
+ * 
+ * @param {AppStep} step - The step to use 
+ * @param {String} key - The key to check
+ * @param idx $idx - The index we're looking for
+ *
+ * @return {Mixed} the value to use
+ */
+function indexOrFirst(step, key, idx) {
+    return _.isNil(step.input(key)[idx])
+             ? step.input(key).first()
+             : step.input(key)[idx]
+    ;
+}
 
 module.exports = {
 
@@ -34,24 +50,24 @@ module.exports = {
      * @param {AppData} dexter Container for all data used in this workflow.
      */
     run: function(step, dexter) {
-        var inputs = util.pickInputs(step, pickInputs),
-            validateErrors = util.checkValidateErrors(inputs, pickInputs),
-            apiKey = dexter.environment('clearbit_api_key'),
-            api = '/v2/combined/find';
+        var coll = stitch(step, 'email');
 
-        if (!apiKey)
-            return this.fail('A [clearbit_api_key] environment variable is required for this module');
+        q.allSettled(coll.map(function(item) {
+            var deferred = q.defer(); 
+            agent.get('https://person.clearbit.com/v2/combined/find')
+              .query(_.omit(item, ['api_key']))
+              .type('json')
+              .set('Authorization', 'Bearer '+item.api_key)
+              .end(function(err, result) {
+                return err
+                  ? deferred.reject(err)
+                  : deferred.resolve(_.get(result, 'body.person'));
+              });
 
-        if (validateErrors)
-            return this.fail(validateErrors);
-
-        request.get({uri: api, qs: inputs, auth: { user: apiKey, pass: '' }, json: true}, function (error, response, body) {
-            if (error)
-                this.fail(error);
-            else if (body && body.error)
-                this.fail(body.error);
-            else
-                this.complete(util.pickOutputs(body, pickOutputs));
-        }.bind(this));
+            return deferred.promise;
+        }))
+        .then(this.complete.bind(this))
+        .catch(this.fail.bind(this))
+        ;
     }
 };
