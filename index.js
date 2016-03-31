@@ -3,44 +3,6 @@ var _     = require('lodash')
   , q     = require('q')
 ;
 
-/**
- * Stitches a collection together based on a master key that dictates how many
- * operations should be performed for this set. 
- * 
- * @param  {AppStep} step   - The step to use for inputs
- * @param  {String}     master - The key to base indexing off of. This key determines how many elements will be in the collection
- * 
- * @return {Array} A collection of objects for iteration
- */
-function stitch(step, master) {
-    var stitched = [];
-    step.input(master).each(function(item, idx) {
-        var el = {};
-        stitched.push(el);
-        _.each(step.inputs(), function(input, key) {
-            el[key] = indexOrFirst(step, key, idx);
-        });
-    });
-
-    return stitched;
-}
-
-/**
- * Get an input at an index or from the first element
- * 
- * @param {AppStep} step - The step to use 
- * @param {String} key - The key to check
- * @param idx $idx - The index we're looking for
- *
- * @return {Mixed} the value to use
- */
-function indexOrFirst(step, key, idx) {
-    return _.isNil(step.input(key)[idx])
-             ? step.input(key).first()
-             : step.input(key)[idx]
-    ;
-}
-
 module.exports = {
 
     /**
@@ -50,17 +12,21 @@ module.exports = {
      * @param {AppData} dexter Container for all data used in this workflow.
      */
     run: function(step, dexter) {
-        var coll = stitch(step, 'email');
 
-        q.allSettled(coll.map(function(item) {
+        var keys = ['email','given_name','family_name','location','company']
+          , coll = step.inputObject(_.zipObject(keys,keys))
+        ;
+
+        q.all(coll.map(function(item) {
             var deferred = q.defer(); 
             agent.get('https://person.clearbit.com/v2/combined/find')
-              .query(_.omit(item, ['api_key']))
+              .query(item)
               .type('json')
-              .set('Authorization', 'Bearer '+item.api_key)
+              .set('Authorization', 'Bearer '+step.input('api_key').first())
               .end(function(err, result) {
-                return err
-                  ? deferred.reject(err)
+                console.log(Object.keys(result.body.person));
+                return err || result.statusCode >= 400
+                  ? deferred.reject(err || result.body)
                   : deferred.resolve(_.get(result, 'body.person'));
               });
 

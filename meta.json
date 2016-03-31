@@ -23,26 +23,14 @@
         "id": "api_key",
         "title": "API Key"
     }],
-    "outputs": [{
-        "id": "id",
-        "title":"ID"
-    }, {
-        "id": "name",
-        "title":"Name"
-    }, {
-        "id": "email",
-        "title":"Email"
-    }, {
-        "id": "gender",
-        "title":"Gender"
-    }, {
-        "id": "bio",
-        "title":"Bio"
-    }, {
-        "id": "site",
-        "title":"Site"
-    }, {
-        "id": "employment",
-        "title":"Employment"
-    }]
+    "outputs": [
+      { "id": "name","title":"Name" },
+      { "id": "gender","title":"Gender" },
+      { "id": "location","title":"Location" },
+      { "id": "bio","title":"Bio" },
+      { "id": "avatar","title":"Avatar" },
+      { "id": "employment","title":"Employment" },
+      { "id": "twitter","title":"Twitter" },
+      { "id": "linkedin","title":"LinkedIn" }
+    ]
 }
