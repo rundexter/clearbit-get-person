@@ -12,10 +12,7 @@ module.exports = {
      * @param {AppData} dexter Container for all data used in this workflow.
      */
     run: function(step, dexter) {
-
-        var keys = ['email','given_name','family_name','location','company']
-          , coll = step.inputObject(_.zipObject(keys,keys))
-        ;
+        var coll = step.inputObject(['email','given_name','family_name','location','company']);
 
         q.all(coll.map(function(item) {
             var deferred = q.defer(); 
