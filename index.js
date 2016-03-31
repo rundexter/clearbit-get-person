@@ -21,7 +21,6 @@ module.exports = {
               .type('json')
               .set('Authorization', 'Bearer '+step.input('api_key').first())
               .end(function(err, result) {
-                console.log(Object.keys(result.body.person));
                 return err || result.statusCode >= 400
                   ? deferred.reject(err || result.body)
                   : deferred.resolve(_.get(result, 'body.person'));
