@@ -1,6 +1,6 @@
 var _ = require('lodash')
-    , env = require('./env')
-    ;
+  , env = require('./env')
+;
 
 module.exports = _.merge({
     /*
@@ -63,7 +63,7 @@ module.exports = _.merge({
              */
             input: {
                 //Replace VAR1 with the name of an expected input, and add more inputs as needed.
-                email: ['alex@alexmaccaw.com', 'ilkovich@gmail.com', 'brendan.bilko@gmail.com']
+                email: ['vincent.ch91@gmail.com', 'ilkovich@gmail.com']
             }
         }
     }
